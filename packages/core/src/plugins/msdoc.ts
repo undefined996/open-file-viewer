@@ -1630,6 +1630,8 @@ function paginateCjkNoticeBlocks(blocks: LegacyWordBlock[]): LegacyWordBlock[][]
   const pages: LegacyWordBlock[][] = [];
   let current: LegacyWordBlock[] = [];
   let usedUnits = 0;
+  let previousWasPageBreak = false;
+  let trailingBlankPages = 0;
   const flush = (force = false) => {
     if (force || current.length > 0) pages.push(current);
     current = [];
@@ -1638,9 +1640,19 @@ function paginateCjkNoticeBlocks(blocks: LegacyWordBlock[]): LegacyWordBlock[][]
 
   for (const block of blocks) {
     if (block.type === "pageBreak") {
+      // Word 97-2003 notice files can expose a final blank section as a
+      // duplicate form-feed next to the preceding page break in the text
+      // stream. Rendering both in place inserts the blank page before the
+      // following appendix, while Word keeps it at the end of the document.
+      if (previousWasPageBreak) {
+        trailingBlankPages += 1;
+        continue;
+      }
       flush(true);
+      previousWasPageBreak = true;
       continue;
     }
+    previousWasPageBreak = false;
 
     if (block.type === "table") {
       const columnWidths = getNoticeTableColumnWidths(block.rows);
@@ -1675,6 +1687,7 @@ function paginateCjkNoticeBlocks(blocks: LegacyWordBlock[]): LegacyWordBlock[][]
     usedUnits += units;
   }
   if (current.length > 0 || pages.length === 0) pages.push(current);
+  for (let index = 0; index < trailingBlankPages; index += 1) pages.push([]);
   return pages;
 }
 
