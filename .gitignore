@@ -9,3 +9,4 @@ coverage
 # Keep the pinned DWG runtime assets in Git for source checkouts and deployments.
 !doc/public/vendor/libredwg-web/dist/
 !doc/public/vendor/libredwg-web/dist/**
+.idea

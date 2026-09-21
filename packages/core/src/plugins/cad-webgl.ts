@@ -15,7 +15,13 @@ export interface WebglDwgPreviewOptions {
   engineLoader: WebglDwgEngineLoader;
   /** Optional base URL for CAD fonts and other runtime resources. */
   baseUrl?: string;
-  /** Skip loading the engine's default font set. Defaults to false. */
+  /**
+   * Skip loading the engine's default font set. Defaults to false.
+   *
+   * Mapped to the engine's inverted `preloadDefaultFonts` option, which replaced
+   * `notLoadDefaultFonts` in `@mlightcad/cad-simple-viewer` 1.5.10. Keeping this
+   * name preserves the public API and the 1.5.9 eager-preload behavior.
+   */
   notLoadDefaultFonts?: boolean;
   /** Verify both worker URLs before opening a drawing. Defaults to true. */
   checkWorkers?: boolean;
@@ -82,7 +88,7 @@ export async function renderWebglDwgPreview(
       baseUrl: options.baseUrl,
       busyIndicatorHost: shell,
       builtinOpenFileDialog: false,
-      notLoadDefaultFonts: options.notLoadDefaultFonts ?? false,
+      preloadDefaultFonts: !(options.notLoadDefaultFonts ?? false),
       useMainThreadDraw: options.useMainThreadDraw ?? false,
       webworkerFileUrls: workerUrls
     });

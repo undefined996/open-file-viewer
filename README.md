@@ -383,7 +383,7 @@ DWG is AutoCAD's proprietary binary format. `cadPlugin()` can use a high-fidelit
 Recommended high-fidelity setup:
 
 ```bash
-npm install @mlightcad/cad-simple-viewer@1.5.9 @mlightcad/data-model@1.12.3 lodash-es@4.17.21
+npm install @mlightcad/cad-simple-viewer@1.5.10 @mlightcad/data-model@1.12.5 lodash-es@4.17.21
 ```
 
 Copy `libredwg-parser-worker.js` and `mtext-renderer-worker.js` from the installed

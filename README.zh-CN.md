@@ -489,7 +489,7 @@ DWG 是 AutoCAD 专有二进制格式，`cadPlugin()` 可以使用高保真 WebG
 推荐按下面的方式接入高保真渲染：
 
 ```bash
-npm install @mlightcad/cad-simple-viewer@1.5.9 @mlightcad/data-model@1.12.3 lodash-es@4.17.21
+npm install @mlightcad/cad-simple-viewer@1.5.10 @mlightcad/data-model@1.12.5 lodash-es@4.17.21
 ```
 
 将已安装的 `@mlightcad/cad-simple-viewer/dist/` 目录中的

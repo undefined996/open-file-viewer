@@ -12,8 +12,8 @@
   },
   "dependencies": {
     "@open-file-viewer/core": "workspace:*",
-    "@mlightcad/cad-simple-viewer": "1.5.9",
-    "@mlightcad/data-model": "1.12.3",
+    "@mlightcad/cad-simple-viewer": "1.5.10",
+    "@mlightcad/data-model": "1.12.5",
     "@mlightcad/libredwg-web": "0.7.4",
     "lodash-es": "4.17.21",
     "pdfjs-dist": "^4.10.38",

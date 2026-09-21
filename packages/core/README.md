@@ -322,7 +322,7 @@ For complex drawings, install the optional WebGL engine and host its two Worker
 files as static assets:
 
 ```bash
-npm install @mlightcad/cad-simple-viewer@1.5.9 @mlightcad/data-model@1.12.3 lodash-es@4.17.21
+npm install @mlightcad/cad-simple-viewer@1.5.10 @mlightcad/data-model@1.12.5 lodash-es@4.17.21
 ```
 
 ```ts
