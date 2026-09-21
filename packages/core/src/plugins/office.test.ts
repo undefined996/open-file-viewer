@@ -1859,6 +1859,62 @@ describe("officePlugin", () => {
     expect(mergedCell?.style.getPropertyValue("--ofv-docx-diagonal-half-width")).toBe("0.5pt");
   });
 
+  it("restores a DOCX table bottom border hidden by terminal vertical-merge cells", async () => {
+    renderDocxAsync.mockImplementationOnce(async (_data: unknown, bodyContainer: HTMLElement) => {
+      const wrapper = document.createElement("div");
+      wrapper.className = "ofv-docx-wrapper";
+      const page = document.createElement("section");
+      page.className = "ofv-docx";
+      const article = document.createElement("article");
+      const table = document.createElement("table");
+      const firstRow = table.insertRow();
+      const mergedCell = firstRow.insertCell();
+      mergedCell.rowSpan = 2;
+      mergedCell.style.borderBottom = "none";
+      mergedCell.textContent = "三类";
+      firstRow.insertCell().textContent = "地区";
+      const lastRow = table.insertRow();
+      const terminalMergeCell = lastRow.insertCell();
+      terminalMergeCell.style.display = "none";
+      terminalMergeCell.style.borderBottom = "0.5pt solid #000";
+      const lastVisibleCell = lastRow.insertCell();
+      lastVisibleCell.style.borderBottom = "0.5pt solid #000";
+      lastVisibleCell.textContent = "甘南州";
+      article.append(table);
+      page.append(article);
+      wrapper.append(page);
+      bodyContainer.append(wrapper);
+    });
+    const zip = new JSZip();
+    zip.file(
+      "word/document.xml",
+      `<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:tbl>
+        <w:tblPr><w:tblBorders><w:bottom w:val="single" w:sz="4" w:color="000000"/></w:tblBorders></w:tblPr>
+        <w:tr><w:tc><w:tcPr><w:vMerge w:val="restart"/></w:tcPr><w:p><w:r><w:t>三类</w:t></w:r></w:p></w:tc>
+          <w:tc><w:p><w:r><w:t>地区</w:t></w:r></w:p></w:tc></w:tr>
+        <w:tr><w:tc><w:tcPr><w:vMerge/></w:tcPr><w:p/></w:tc>
+          <w:tc><w:p><w:r><w:t>甘南州</w:t></w:r></w:p></w:tc></w:tr>
+      </w:tbl></w:body></w:document>`
+    );
+    const container = document.createElement("div");
+    document.body.append(container);
+    createViewer({
+      container,
+      file: await zip.generateAsync({
+        type: "blob",
+        mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      }),
+      fileName: "merged-table-bottom-border.docx",
+      plugins: [officePlugin()]
+    });
+
+    await waitFor(() => Boolean(container.querySelector("[data-ofv-docx-merged-bottom-border-repaired='true']")));
+
+    const table = container.querySelector<HTMLTableElement>("table");
+    expect(table?.style.borderBottomStyle).toBe("solid");
+    expect(table?.style.borderBottomWidth).not.toBe("");
+  });
+
   it("aligns right-tab DOCX text to the OOXML tab position", async () => {
     renderDocxAsync.mockImplementationOnce(async (_data: unknown, bodyContainer: HTMLElement) => {
       const wrapper = document.createElement("div");

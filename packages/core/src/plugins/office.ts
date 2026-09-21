@@ -1446,6 +1446,7 @@ async function normalizeDocxLayout(container: HTMLElement, arrayBuffer: ArrayBuf
   repairDocxCharacterSpacing(container, hints.characterSpacingParagraphs);
   repairDocxAutoLineHeights(container, hints.autoLineHeightParagraphs);
   repairDocxMergedCellEmptyParagraphs(container, hints.mergedCellEmptyParagraphs);
+  repairDocxMergedCellTableBottomBorders(container);
   markDocxSectionBreakParagraphs(container, hints.sectionBreakParagraphIndexes);
   repairDocxCharacterScaling(container, hints.characterScaleParagraphs);
   const pages = container.querySelectorAll<HTMLElement>("section.ofv-docx");
@@ -2427,6 +2428,27 @@ function repairDocxMergedCellEmptyParagraphs(
     if (removable.length > 0) {
       cell.dataset.ofvDocxMergedEmptyParagraphsRemoved = String(removable.length);
     }
+  }
+}
+
+function repairDocxMergedCellTableBottomBorders(container: HTMLElement): void {
+  const tables = container.querySelectorAll<HTMLTableElement>("section.ofv-docx article table");
+  for (const table of tables) {
+    const lastRow = table.rows.item(table.rows.length - 1);
+    if (!lastRow || (table.style.borderBottomStyle && table.style.borderBottomStyle !== "none")) {
+      continue;
+    }
+    const terminalMergeCell = Array.from(lastRow.cells).find((cell) => {
+      const style = cell.style;
+      return style.display === "none" && style.borderBottomStyle !== "none" && parseCssPixelValue(style.borderBottomWidth) > 0;
+    });
+    if (!terminalMergeCell) {
+      continue;
+    }
+    table.style.borderBottomWidth = terminalMergeCell.style.borderBottomWidth;
+    table.style.borderBottomStyle = terminalMergeCell.style.borderBottomStyle;
+    table.style.borderBottomColor = terminalMergeCell.style.borderBottomColor;
+    table.dataset.ofvDocxMergedBottomBorderRepaired = "true";
   }
 }
 
